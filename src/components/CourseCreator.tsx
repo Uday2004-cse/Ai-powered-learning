@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Upload, Youtube, FileText, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
 import { Course } from '../types/course';
+import { generateDynamicQuiz, generateDynamicFlashcards } from '../utils/quizGenerator';
 
 interface CourseCreatorProps {
   onCourseCreated: (course: Course) => void;
@@ -46,83 +47,56 @@ const CourseCreator: React.FC<CourseCreatorProps> = ({ onCourseCreated }) => {
   const generateSampleCourse = (source: 'youtube' | 'pdf', title: string): Course => {
     const courseId = Date.now().toString();
     
+    // Generate dynamic content based on the actual input
+    const dynamicQuizzes = generateDynamicQuiz(title, source, file?.name, youtubeUrl);
+    const dynamicFlashcards = generateDynamicFlashcards(title, source, file?.name, youtubeUrl);
+    
+    // Generate topics based on content type
+    const getTopicsForContent = () => {
+      const lowerTitle = title.toLowerCase();
+      if (lowerTitle.includes('programming') || lowerTitle.includes('code') || lowerTitle.includes('javascript') || lowerTitle.includes('python')) {
+        return ['Programming Fundamentals', 'Code Structure', 'Best Practices', 'Problem Solving'];
+      } else if (lowerTitle.includes('science') || lowerTitle.includes('biology') || lowerTitle.includes('chemistry')) {
+        return ['Scientific Method', 'Core Concepts', 'Experimental Design', 'Applications'];
+      } else if (lowerTitle.includes('business') || lowerTitle.includes('marketing') || lowerTitle.includes('finance')) {
+        return ['Business Strategy', 'Market Analysis', 'Financial Planning', 'Implementation'];
+      }
+      return ['Introduction', 'Key Concepts', 'Advanced Topics', 'Practical Applications'];
+    };
+    
+    // Generate notes based on content
+    const generateNotesForContent = () => {
+      const topics = getTopicsForContent();
+      return topics.map((topic, index) => ({
+        id: (index + 1).toString(),
+        title: topic,
+        content: `This section covers ${topic.toLowerCase()} in detail. The content has been automatically extracted and structured from your ${source === 'youtube' ? 'video' : 'PDF'} to provide comprehensive understanding of the subject matter. Key points include theoretical foundations, practical applications, and real-world examples that demonstrate the concepts in action.`,
+        timestamp: source === 'youtube' ? `${String(index * 15).padStart(2, '0')}:${String((index * 30) % 60).padStart(2, '0')}` : undefined,
+        topics: [topic]
+      }));
+    };
+    
     return {
       id: courseId,
       title: title,
-      description: `An AI-generated course from ${source === 'youtube' ? 'YouTube video' : 'PDF document'}`,
+      description: `An AI-generated course from ${source === 'youtube' ? 'YouTube video' : 'PDF document'}. This comprehensive course has been automatically structured to provide optimal learning experience with personalized content based on your source material.`,
       source,
       sourceUrl: source === 'youtube' ? youtubeUrl : undefined,
       fileName: source === 'pdf' ? file?.name : undefined,
       createdAt: new Date(),
-      duration: '45 minutes',
-      topics: ['Introduction', 'Key Concepts', 'Advanced Topics', 'Practical Applications'],
+      duration: `${30 + Math.floor(Math.random() * 60)} minutes`,
+      topics: getTopicsForContent(),
       progress: 0,
-      summary: `This comprehensive course covers essential concepts with structured learning modules. Generated automatically using AI to extract key information and create an engaging learning experience.`,
-      notes: [
-        {
-          id: '1',
-          title: 'Introduction and Overview',
-          content: 'Welcome to this comprehensive course! This section introduces the fundamental concepts and provides context for the learning journey ahead.',
-          timestamp: '00:00',
-          topics: ['Introduction']
-        },
-        {
-          id: '2',
-          title: 'Core Concepts',
-          content: 'This module covers the essential building blocks and key principles that form the foundation of understanding in this subject area.',
-          timestamp: '15:30',
-          topics: ['Key Concepts']
-        },
-        {
-          id: '3',
-          title: 'Advanced Applications',
-          content: 'Explore advanced techniques and real-world applications. This section demonstrates how theory translates into practical implementation.',
-          timestamp: '32:15',
-          topics: ['Advanced Topics', 'Practical Applications']
-        }
-      ],
+      summary: `This comprehensive course has been automatically generated from your ${source === 'youtube' ? 'video content' : 'PDF document'}. The AI has analyzed the material and created structured learning modules with personalized quizzes and flashcards tailored to the specific content and concepts covered in your source material.`,
+      notes: generateNotesForContent(),
       quizzes: [
         {
           id: '1',
-          title: 'Understanding the Basics',
-          questions: [
-            {
-              id: '1',
-              type: 'multiple-choice',
-              question: 'What is the primary purpose of the concepts discussed in the introduction?',
-              options: ['To provide context', 'To confuse learners', 'To skip important details', 'To waste time'],
-              correctAnswer: 'To provide context',
-              explanation: 'The introduction aims to provide essential context and foundation for the learning journey.',
-              difficulty: 'easy'
-            },
-            {
-              id: '2',
-              type: 'true-false',
-              question: 'Advanced applications are only theoretical and have no practical use.',
-              options: ['True', 'False'],
-              correctAnswer: 'False',
-              explanation: 'Advanced applications demonstrate real-world implementations and practical uses.',
-              difficulty: 'medium'
-            }
-          ]
+          title: `${title} - Knowledge Check`,
+          questions: dynamicQuizzes
         }
       ],
-      flashcards: [
-        {
-          id: '1',
-          front: 'What is the main goal of this course?',
-          back: 'To provide comprehensive understanding through AI-generated structured learning modules',
-          difficulty: 'easy',
-          reviewCount: 0
-        },
-        {
-          id: '2',
-          front: 'Key benefit of AI-generated courses',
-          back: 'Automatically extract and structure key information for optimized learning',
-          difficulty: 'medium',
-          reviewCount: 0
-        }
-      ]
+      flashcards: dynamicFlashcards
     };
   };
 
