@@ -70,8 +70,6 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted }) => {
               <Play className="h-5 w-5" />
               <span>Watch Demo</span>
             </button>
-              Watch Demo
-            </button>
           </div>
         </div>
 
