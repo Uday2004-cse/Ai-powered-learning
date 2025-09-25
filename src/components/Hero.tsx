@@ -39,7 +39,7 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted }) => {
           <div className="flex justify-center mb-6">
             <div className="flex items-center space-x-2 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-full border border-blue-200">
               <Sparkles className="h-4 w-4 text-blue-600" />
-              <span className="text-sm font-medium text-blue-600">AI-Powered Learning Revolution</span>
+              <span className="text-sm font-medium text-blue-600">Next-Gen AI Learning Platform</span>
             </div>
           </div>
           
@@ -51,7 +51,7 @@ const Hero: React.FC<HeroProps> = ({ onGetStarted }) => {
           </h1>
           
           <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
-            EduSynth uses advanced AI to convert YouTube videos and PDFs into comprehensive 
+            MindSphere AI uses advanced AI to convert YouTube videos and PDFs into comprehensive 
             micro-courses with structured notes, quizzes, flashcards, and an intelligent tutor bot.
           </p>
           

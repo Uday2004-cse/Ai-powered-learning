@@ -97,7 +97,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuth }) => {
               <Sparkles className="h-6 w-6" />
             </div>
             <h2 className="text-2xl font-bold">
-              {isSignUp ? 'Join EduSynth' : 'Welcome Back'}
+              {isSignUp ? 'Join MindSphere AI' : 'Welcome Back'}
             </h2>
           </div>
           <p className="text-blue-100">

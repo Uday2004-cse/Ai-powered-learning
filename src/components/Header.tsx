@@ -30,7 +30,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentView, user, onAuthCl
               <GraduationCap className="h-6 w-6 text-white" />
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              EduSynth
+              MindSphere AI
             </span>
           </div>
 

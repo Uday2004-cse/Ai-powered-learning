@@ -42,7 +42,7 @@ const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose }) => {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">How EduSynth Works</h2>
+            <h2 className="text-2xl font-bold text-gray-900">How MindSphere AI Works</h2>
             <p className="text-gray-600">Transform any content into interactive courses in minutes</p>
           </div>
           <button
@@ -63,7 +63,7 @@ const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             <div className="absolute bottom-4 left-4 text-white">
-              <h3 className="text-lg font-semibold">EduSynth Demo</h3>
+              <h3 className="text-lg font-semibold">MindSphere AI Demo</h3>
               <p className="text-white/80 text-sm">See how AI transforms content into courses</p>
             </div>
           </div>
