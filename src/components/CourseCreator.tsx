@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Upload, FileText, Globe, Loader2, CheckCircle } from 'lucide-react';
 import { Course } from '../types/course';
-import { generateQuiz, generateDynamicFlashcards, generateNotes } from '../utils/quizGenerator';
+import { generateQuiz, generateDynamicFlashcards, generateEnhancedNotes } from '../utils/quizGenerator';
 
 interface CourseCreatorProps {
   onCourseCreated: (course: Course) => void;
@@ -40,7 +40,7 @@ const CourseCreator: React.FC<CourseCreatorProps> = ({ onCourseCreated }) => {
       // Generate dynamic content based on the source
       const quiz = generateQuiz(source, title);
       const flashcards = generateDynamicFlashcards(source, title);
-      const notes = generateNotes(source, title);
+      const notes = generateEnhancedNotes(source, title);
 
       const newCourse: Course = {
         id: Date.now().toString(),
