@@ -52,7 +52,11 @@ const CourseCreator: React.FC<CourseCreatorProps> = ({ onCourseCreated }) => {
         topics: notes.map(note => note.title),
         progress: 0,
         notes,
-        quizzes: [quiz],
+        quizzes: [{
+          id: Date.now().toString(),
+          title: `${title} Quiz`,
+          questions: quiz
+        }],
         flashcards,
         summary: `This course was generated from ${source} and covers key concepts with interactive learning materials.`
       };
