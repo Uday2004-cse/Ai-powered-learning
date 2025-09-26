@@ -15,15 +15,25 @@ const QuizComponent: React.FC<QuizComponentProps> = ({ quizzes, onComplete }) =>
   const [answers, setAnswers] = useState<{[key: string]: string}>({});
   const [quizCompleted, setQuizCompleted] = useState(false);
 
-  const currentQuiz = quizzes[currentQuizIndex];
-  const currentQuestion = currentQuiz?.questions[currentQuestionIndex];
+  const currentQuiz = quizzes && quizzes.length > 0 ? quizzes[currentQuizIndex] : null;
+  const currentQuestion = currentQuiz && currentQuiz.questions && currentQuiz.questions.length > 0 ? currentQuiz.questions[currentQuestionIndex] : null;
 
-  if (!currentQuiz) {
+  if (!quizzes || quizzes.length === 0 || !currentQuiz) {
     return (
       <div className="text-center py-12">
         <Brain className="h-16 w-16 text-gray-400 mx-auto mb-4" />
         <h3 className="text-xl font-semibold text-gray-900 mb-2">No Quizzes Available</h3>
         <p className="text-gray-600">Quizzes will be generated based on your course content.</p>
+      </div>
+    );
+  }
+
+  if (!currentQuestion) {
+    return (
+      <div className="text-center py-12">
+        <Brain className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">No Questions Available</h3>
+        <p className="text-gray-600">This quiz doesn't have any questions yet.</p>
       </div>
     );
   }
