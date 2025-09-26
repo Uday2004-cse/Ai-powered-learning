@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Upload, FileText, Globe, Loader2, CheckCircle } from 'lucide-react';
 import { Course } from '../types/course';
-import { generateQuiz, generateDynamicFlashcards, generateEnhancedNotes } from '../utils/quizGenerator';
+import { generateDynamicQuiz, generateDynamicFlashcards, generateEnhancedNotes } from '../utils/quizGenerator';
 
 interface CourseCreatorProps {
   onCourseCreated: (course: Course) => void;
@@ -38,7 +38,7 @@ const CourseCreator: React.FC<CourseCreatorProps> = ({ onCourseCreated }) => {
       const source = activeTab === 'pdf' ? file?.name || 'PDF Document' : url;
       
       // Generate dynamic content based on the source
-      const quiz = generateQuiz(source, title);
+      const quiz = generateDynamicQuiz(title, activeTab, file?.name, url);
       const flashcards = generateDynamicFlashcards(source, title);
       const notes = generateEnhancedNotes(source, title);
 
