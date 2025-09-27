@@ -35,12 +35,14 @@ const CourseCreator: React.FC<CourseCreatorProps> = ({ onCourseCreated }) => {
       // Simulate processing time
       await new Promise(resolve => setTimeout(resolve, 3000));
 
+      // Create a unique timestamp for this course creation
+      const courseTimestamp = Date.now();
       const source = activeTab === 'pdf' ? file?.name || 'PDF Document' : url;
       
       // Generate dynamic content based on the source
-      const quiz = generateDynamicQuiz(title, activeTab, file?.name, url);
-      const flashcards = generateDynamicFlashcards(source, title);
-      const notes = generateEnhancedNotes(source, title);
+      const quiz = generateDynamicQuiz(title, activeTab, file?.name, url, courseTimestamp);
+      const flashcards = generateDynamicFlashcards(title, activeTab, file?.name, url, courseTimestamp);
+      const notes = generateEnhancedNotes(title, activeTab, file?.name, url, courseTimestamp);
 
       const newCourse: Course = {
         id: Date.now().toString(),

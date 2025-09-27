@@ -1,11 +1,13 @@
 import { QuizQuestion } from '../types/course';
 
 // Advanced content analysis for PDF and video content
-const analyzeContentAdvanced = (title: string, source: 'youtube' | 'pdf', fileName?: string, url?: string) => {
+const analyzeContentAdvanced = (title: string, source: 'youtube' | 'pdf', fileName?: string, url?: string, timestamp?: number) => {
   const contentText = (title + ' ' + (fileName || url || '')).toLowerCase();
   
-  // Create a more sophisticated hash for better uniqueness
-  const contentHash = btoa(encodeURIComponent(contentText + Date.now().toString().slice(-4))).slice(0, 12);
+  // Create a truly unique hash using timestamp and random elements
+  const uniqueId = timestamp || Date.now();
+  const randomSeed = Math.random().toString(36).substring(2, 8);
+  const contentHash = btoa(encodeURIComponent(contentText + uniqueId + randomSeed)).slice(0, 12);
   
   // Enhanced category detection with subcategories
   let category = 'general';
@@ -262,9 +264,10 @@ export const generateDynamicQuiz = (
   title: string, 
   source: 'youtube' | 'pdf', 
   fileName?: string, 
-  url?: string
+  url?: string,
+  timestamp?: number
 ): QuizQuestion[] => {
-  const { category, subcategory, difficulty, contentHash } = analyzeContentAdvanced(title, source, fileName, url);
+  const { category, subcategory, difficulty, contentHash } = analyzeContentAdvanced(title, source, fileName, url, timestamp);
   const questionPools = getQuestionPools();
   
   // Get appropriate question pool
@@ -283,15 +286,16 @@ export const generateDynamicQuiz = (
   }
 
   // Use hash for consistent but varied selection
-  const hashNum = parseInt(contentHash.slice(-3), 36) || 1;
+  const hashNum = parseInt(contentHash.slice(-3), 36) || Math.floor(Math.random() * 1000) + 1;
+  const randomOffset = Math.floor(Math.random() * 10);
   const selectedQuestions: QuizQuestion[] = [];
   const usedIndices = new Set<number>();
   
-  // Generate 4-6 questions based on content complexity
-  const numQuestions = Math.min(4 + (hashNum % 3), availableQuestions.length);
+  // Generate 4-6 questions with more randomness
+  const numQuestions = Math.min(4 + Math.floor(Math.random() * 3), availableQuestions.length);
   
   for (let i = 0; i < numQuestions; i++) {
-    let questionIndex = (hashNum + i * 7 + i * i) % availableQuestions.length;
+    let questionIndex = (hashNum + randomOffset + i * 7 + i * i + Math.floor(Math.random() * 5)) % availableQuestions.length;
     
     // Ensure unique questions
     let attempts = 0;
@@ -319,10 +323,12 @@ export const generateDynamicFlashcards = (
   title: string,
   source: 'youtube' | 'pdf',
   fileName?: string,
-  url?: string
+  url?: string,
+  timestamp?: number
 ) => {
-  const { category, subcategory, contentHash } = analyzeContentAdvanced(title, source, fileName, url);
-  const hashNum = parseInt(contentHash.slice(-3), 36) || 1;
+  const { category, subcategory, contentHash } = analyzeContentAdvanced(title, source, fileName, url, timestamp);
+  const hashNum = parseInt(contentHash.slice(-3), 36) || Math.floor(Math.random() * 1000) + 1;
+  const randomOffset = Math.floor(Math.random() * 10);
 
   const flashcardPools = {
     programming: {
@@ -398,13 +404,13 @@ export const generateDynamicFlashcards = (
     availableFlashcards = flashcardPools.general;
   }
 
-  // Generate 4-5 flashcards
-  const numFlashcards = Math.min(4 + (hashNum % 2), availableFlashcards.length);
+  // Generate 4-6 flashcards with more variety
+  const numFlashcards = Math.min(4 + Math.floor(Math.random() * 3), availableFlashcards.length);
   const selectedFlashcards = [];
   const usedIndices = new Set<number>();
   
   for (let i = 0; i < numFlashcards; i++) {
-    let cardIndex = (hashNum + i * 5 + i * i) % availableFlashcards.length;
+    let cardIndex = (hashNum + randomOffset + i * 5 + i * i + Math.floor(Math.random() * 3)) % availableFlashcards.length;
     
     let attempts = 0;
     while (usedIndices.has(cardIndex) && attempts < availableFlashcards.length) {
@@ -420,7 +426,7 @@ export const generateDynamicFlashcards = (
         id: `f${i + 1}`,
         front: card.front,
         back: card.back,
-        difficulty: ['easy', 'medium', 'hard'][i % 3] as 'easy' | 'medium' | 'hard',
+        difficulty: ['easy', 'medium', 'hard'][Math.floor(Math.random() * 3)] as 'easy' | 'medium' | 'hard',
         reviewCount: 0
       });
     }
@@ -430,57 +436,57 @@ export const generateDynamicFlashcards = (
 };
 
 // Enhanced content generation for notes
-export const generateEnhancedNotes = (title: string, source: 'youtube' | 'pdf', fileName?: string, url?: string) => {
-  const { category, subcategory } = analyzeContentAdvanced(title, source, fileName, url);
+export const generateEnhancedNotes = (title: string, source: 'youtube' | 'pdf', fileName?: string, url?: string, timestamp?: number) => {
+  const { category, subcategory } = analyzeContentAdvanced(title, source, fileName, url, timestamp);
   
   const noteTemplates = {
     programming: {
       beginner: [
         {
           title: "Introduction to Programming Concepts",
-          content: "This section introduces fundamental programming concepts essential for understanding software development. We explore variables as named storage locations that hold data, functions as reusable code blocks that perform specific tasks, and basic control structures like loops and conditionals. Understanding these building blocks is crucial for writing effective code and solving computational problems systematically."
+          content: "This comprehensive section delves into the core programming concepts that form the foundation of software development. We examine how variables serve as dynamic storage containers for data, explore the power of functions as modular code components, and investigate control structures that govern program flow. These fundamental elements are essential for creating robust, maintainable software solutions."
         },
         {
-          title: "Data Types and Variables",
-          content: "Programming languages use different data types to represent various kinds of information. Primitive types include integers for whole numbers, floats for decimal numbers, strings for text, and booleans for true/false values. Variables act as containers for these data types, allowing programs to store, manipulate, and retrieve information dynamically during execution."
+          title: "Advanced Data Structures and Memory Management",
+          content: "Modern programming requires sophisticated understanding of data organization and memory utilization. We explore complex data structures including arrays, linked lists, hash tables, and trees, examining their performance characteristics and optimal use cases. Memory management techniques, garbage collection, and optimization strategies are crucial for building efficient applications."
         },
         {
-          title: "Control Flow and Logic",
-          content: "Control flow determines the order in which program instructions are executed. Conditional statements (if/else) allow programs to make decisions based on specific conditions, while loops (for, while) enable repetitive execution of code blocks. Understanding control flow is essential for creating programs that can respond to different inputs and handle complex logic."
+          title: "Software Architecture and Design Patterns",
+          content: "Professional software development demands mastery of architectural principles and proven design patterns. We investigate SOLID principles, examine common patterns like Singleton, Factory, and Observer, and explore how proper architecture enables scalable, maintainable codebases. These concepts are fundamental for building enterprise-level applications."
         }
       ],
       intermediate: [
         {
-          title: "Object-Oriented Programming Principles",
-          content: "Object-Oriented Programming (OOP) organizes code around objects that encapsulate data and behavior. The four pillars of OOP - encapsulation, inheritance, polymorphism, and abstraction - provide powerful tools for creating maintainable and scalable software. Encapsulation bundles data with methods, inheritance allows code reuse, polymorphism enables flexible interfaces, and abstraction hides complex implementation details."
+          title: "Advanced OOP and Functional Programming Paradigms",
+          content: "Modern software development embraces multiple programming paradigms to solve complex problems effectively. We explore advanced object-oriented concepts including composition over inheritance, dependency injection, and SOLID principles. Additionally, we examine functional programming concepts like immutability, higher-order functions, and reactive programming patterns that enhance code reliability and maintainability."
         },
         {
-          title: "Data Structures and Algorithms",
-          content: "Efficient data organization and manipulation are crucial for software performance. Arrays provide indexed access to elements, linked lists offer dynamic sizing, stacks follow LIFO principle, and queues implement FIFO behavior. Understanding when to use each structure and their time/space complexities helps in choosing optimal solutions for specific problems."
+          title: "Performance Optimization and Scalability",
+          content: "Building high-performance applications requires deep understanding of optimization techniques and scalability patterns. We analyze algorithmic complexity, explore caching strategies, examine database optimization techniques, and investigate distributed system architectures. These skills are essential for creating applications that can handle enterprise-scale workloads efficiently."
         }
       ]
     },
     science: {
       basic: [
         {
-          title: "Scientific Method and Inquiry",
-          content: "The scientific method provides a systematic approach to understanding the natural world. It begins with observation, followed by hypothesis formation, experimental design, data collection, analysis, and conclusion drawing. This iterative process ensures that scientific knowledge is based on empirical evidence and can be verified through reproducible experiments."
+          title: "Foundations of Scientific Discovery",
+          content: "Scientific inquiry represents humanity's most powerful tool for understanding natural phenomena. Through systematic observation, hypothesis formation, controlled experimentation, and rigorous analysis, scientists build reliable knowledge about our world. This methodical approach has revolutionized our understanding of everything from subatomic particles to cosmic structures, forming the backbone of modern technological advancement."
         },
         {
-          title: "Fundamental Concepts and Principles",
-          content: "Core scientific principles form the foundation for understanding complex phenomena. These include conservation laws (energy, mass, momentum), cause-and-effect relationships, and the interconnectedness of natural systems. Mastering these fundamentals enables deeper comprehension of specialized topics and their real-world applications."
+          title: "Interdisciplinary Scientific Connections",
+          content: "Modern science increasingly recognizes the interconnected nature of natural phenomena across traditional disciplinary boundaries. Biochemistry bridges biology and chemistry, biophysics connects physics with life sciences, and environmental science integrates multiple fields to address complex ecological challenges. Understanding these connections is crucial for tackling contemporary scientific problems."
         }
       ]
     },
     business: {
       startup: [
         {
-          title: "Entrepreneurship Fundamentals",
-          content: "Successful entrepreneurship requires understanding market needs, validating business ideas, and building sustainable business models. The lean startup methodology emphasizes rapid experimentation, customer feedback, and iterative development to minimize risk and maximize learning. Key concepts include minimum viable product (MVP), product-market fit, and pivot strategies."
+          title: "Innovation and Market Disruption",
+          content: "Contemporary entrepreneurship focuses on identifying market inefficiencies and creating innovative solutions that disrupt traditional industries. Successful entrepreneurs leverage emerging technologies, changing consumer behaviors, and global connectivity to build scalable business models. The modern startup ecosystem emphasizes rapid iteration, data-driven decision making, and customer-centric product development."
         },
         {
-          title: "Business Planning and Strategy",
-          content: "Effective business planning involves market analysis, competitive research, financial projections, and risk assessment. A comprehensive business plan serves as a roadmap for growth and a tool for attracting investors. Strategic thinking helps entrepreneurs identify opportunities, allocate resources efficiently, and adapt to changing market conditions."
+          title: "Digital Transformation and Technology Integration",
+          content: "Modern businesses must navigate the complexities of digital transformation to remain competitive in today's technology-driven marketplace. This involves integrating artificial intelligence, leveraging big data analytics, implementing cloud-based solutions, and creating seamless digital customer experiences. Understanding these technological trends is essential for building future-ready organizations."
         }
       ]
     }
@@ -500,25 +506,29 @@ export const generateEnhancedNotes = (title: string, source: 'youtube' | 'pdf', 
   if (templates.length === 0) {
     templates = [
       {
-        title: "Core Concepts and Principles",
-        content: "This section covers the fundamental concepts and principles that form the foundation of the subject matter. Understanding these core ideas is essential for grasping more advanced topics and their practical applications. The content has been structured to provide clear explanations with relevant examples and context."
+        title: `Foundational Understanding of ${title}`,
+        content: `This comprehensive exploration examines the essential principles and methodologies that define this subject area. Through systematic analysis and practical examples, we build a solid foundation for advanced learning. The content integrates theoretical frameworks with real-world applications, providing learners with both conceptual understanding and practical skills necessary for mastery.`
       },
       {
-        title: "Practical Applications and Examples",
-        content: "Real-world applications demonstrate how theoretical concepts translate into practical solutions. This section explores various scenarios where the learned principles can be applied, providing concrete examples that illustrate the relevance and importance of the material in professional and academic contexts."
+        title: `Advanced Applications and Case Studies`,
+        content: `Building upon foundational knowledge, this section delves into sophisticated applications and detailed case studies that demonstrate the practical relevance of theoretical concepts. We examine industry best practices, analyze successful implementations, and explore innovative approaches that push the boundaries of conventional thinking in this field.`
       },
       {
-        title: "Advanced Topics and Future Directions",
-        content: "Building upon the foundational knowledge, this section delves into more sophisticated aspects of the subject. It explores emerging trends, advanced techniques, and future developments that extend beyond the basics, preparing learners for continued growth and specialization in the field."
+        title: `Future Trends and Emerging Developments`,
+        content: `The rapidly evolving landscape of this field presents exciting opportunities and challenges for practitioners and researchers. This section explores cutting-edge developments, emerging technologies, and future trends that will shape the discipline. We examine how current innovations are transforming traditional approaches and creating new possibilities for advancement.`
       }
     ];
   }
 
-  return templates.map((template, index) => ({
+  // Add randomization to note selection and content variation
+  const shuffledTemplates = [...templates].sort(() => Math.random() - 0.5);
+  const selectedTemplates = shuffledTemplates.slice(0, Math.min(3 + Math.floor(Math.random() * 2), templates.length));
+
+  return selectedTemplates.map((template, index) => ({
     id: (index + 1).toString(),
     title: template.title,
     content: template.content,
-    timestamp: source === 'youtube' ? `${String(index * 12).padStart(2, '0')}:${String((index * 25) % 60).padStart(2, '0')}` : undefined,
+    timestamp: source === 'youtube' ? `${String((index + 1) * Math.floor(Math.random() * 15 + 5)).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}` : undefined,
     topics: [template.title.split(' ')[0], template.title.split(' ')[1]].filter(Boolean)
   }));
 };
